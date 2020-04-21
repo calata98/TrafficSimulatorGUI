@@ -101,7 +101,7 @@ public class MapComponent extends JPanel implements TrafficSimObserver {
 	}
 
 	private void drawVehicles(Graphics g) {
-		for (Vehicle v : _map.getVehilces()) {
+		for (Vehicle v : _map.getVehicles()) {
 			if (v.getStatus() != VehicleStatus.ARRIVED) {
 
 				// The calculation below compute the coordinate (vX,vY) of the vehicle on the
@@ -164,8 +164,10 @@ public class MapComponent extends JPanel implements TrafficSimObserver {
 		}
 		maxW += 20;
 		maxH += 20;
-		setPreferredSize(new Dimension(maxW, maxH));
-		setSize(new Dimension(maxW, maxH));
+		if (maxW > getWidth() || maxH > getHeight()) {
+		    setPreferredSize(new Dimension(maxW, maxH));
+		    setSize(new Dimension(maxW, maxH));
+		}
 	}
 
 	// This method draws a line from (x1,y1) to (x2,y2) with an arrow.
