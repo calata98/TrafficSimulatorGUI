@@ -7,7 +7,6 @@ import java.awt.Toolkit;
 
 import javax.swing.*;
 
-import extra.jtable.EventsTableModel;
 import simulator.control.Controller;
 
 public class MainWindow extends JFrame {
@@ -16,6 +15,7 @@ public class MainWindow extends JFrame {
 	public MainWindow(Controller ctrl ) {
 	super ( "Traffic Simulator" );
 	_ctrl = ctrl ;
+	
 	
 	initGUI();
 	}
@@ -39,6 +39,10 @@ public class MainWindow extends JFrame {
 	createViewPanel( new JTable( new EventsTableModel( _ctrl )), "Events" );
 	eventsView .setPreferredSize( new Dimension(500, 200));
 	tablesPanel .add( eventsView );
+	
+	
+	
+	
 	// TODO add other tables
 	// ...
 	// maps
@@ -49,6 +53,7 @@ public class MainWindow extends JFrame {
 	// ...
 	this .setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
 	this .pack();
+	this.setLocationRelativeTo(null);
 	this .setVisible( true );
 	}
 	private JPanel createViewPanel(JComponent c , String title ) {

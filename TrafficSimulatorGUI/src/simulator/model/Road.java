@@ -158,5 +158,9 @@ public abstract class Road extends SimulatedObject{
 	public int getCO2Limit() {
 		return contLimit;
 	}
+	
+	public Weather getWeather() {
+		return weather;
+	}
 
 }

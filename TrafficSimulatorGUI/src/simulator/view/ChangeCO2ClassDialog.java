@@ -11,38 +11,33 @@ import java.util.List;
 
 import javax.swing.*;
 
+import simulator.model.RoadMap;
 import simulator.model.Vehicle;
 
 public class ChangeCO2ClassDialog extends JDialog {
+	
+	private static final String HELPMSG = "Schedule an event to change the CO2 class of a vehicle after a given number of simulation ticks from now.";
 
 	private final JPanel contentPanel = new JPanel();
-	private Vehicle [] vehicles;
-	private final String [] co2Class = {"0","1","2","3","4","5","6","7","8","9","10"};
+	private int _status;
+	private RoadMap map;
+	private JSpinner spTicks;
+	private JComboBox<Vehicle> vehicles;
+	private JComboBox<Integer> cbCO2;
+	private DefaultComboBoxModel<Vehicle> vehiclesModel;
+	private final Integer [] co2Class = {0,1,2,3,4,5,6,7,8,9,10};
 	
-	public ChangeCO2ClassDialog(JFrame parent,List<Vehicle> vehicles) {
+	public ChangeCO2ClassDialog(JFrame parent) {
 		super(parent,true);
-		setTitle("Change CO2 Class");
-		
-		if(vehicles.size() == 0) {
-			//Excepcion
-			this.vehicles = new Vehicle [10];
-			
-		}else {
-			this.vehicles = new Vehicle [vehicles.size() - 1];
-			
-			for(int i = 0; i < vehicles.size() - 1; i++) {
-				this.vehicles[i] = vehicles.get(i);
-			}
-			
-		}
-		
 
-		initDialog();
+		initGUI();
 	}
 	
-	private void initDialog() {
-		
-		
+	private void initGUI() {
+
+		_status = 0;
+
+		setTitle("Change CO2 Class");
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setResizable(false);
         setBounds(100, 100, 450, 160);
@@ -53,7 +48,7 @@ public class ChangeCO2ClassDialog extends JDialog {
         contentPanel.setBackground(Color.white);
         
         //Se le añade el texto
-        JTextArea texto = new JTextArea("Schedule an event to change the CO2 class of a vehicle after a given number of simulation ticks from now.");
+        JTextArea texto = new JTextArea(HELPMSG);
         texto.setBounds(20, 20, 440, 220);
         texto.setWrapStyleWord(true);
         texto.setLineWrap(true);
@@ -69,25 +64,27 @@ public class ChangeCO2ClassDialog extends JDialog {
         panelCMain.setLayout(new FlowLayout());
         panelCMain.setBackground(Color.white);
         
-        JTextArea tVehicle = new JTextArea(" Vehicle: " );
-        tVehicle.setEditable(false);	
+        JLabel tVehicle = new JLabel(" Vehicle: " );
         panelCMain.add(tVehicle);        
         
-        JComboBox<Vehicle> cbVehicles = new JComboBox<Vehicle> (vehicles);
-        panelCMain.add(cbVehicles);
         
-        JTextArea tCO2 = new JTextArea(" CO2 Class: " );
-        tCO2.setEditable(false);
+        vehiclesModel = new DefaultComboBoxModel<Vehicle>();
+        
+        vehicles = new JComboBox();
+        
+        vehicles.setModel(vehiclesModel);
+        panelCMain.add(vehicles);
+        
+        JLabel tCO2 = new JLabel(" CO2 Class: " );
         panelCMain.add(tCO2);   
         
-        JComboBox<String> cbCO2 = new JComboBox<String> (co2Class);
+        cbCO2 = new JComboBox<Integer> (co2Class);
         panelCMain.add(cbCO2);
         
-        JTextArea tTicks = new JTextArea(" Ticks: " );
-        tTicks.setEditable(false);
+        JLabel tTicks = new JLabel(" Ticks: " );
         panelCMain.add(tTicks); 
         
-        JSpinner spTicks = new JSpinner();
+        spTicks = new JSpinner();
         SpinnerModel model =   new SpinnerNumberModel(1, 0, 20, 1);
         spTicks.setModel(model);
         panelCMain.add(spTicks); 
@@ -100,7 +97,8 @@ public class ChangeCO2ClassDialog extends JDialog {
         bCancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-            	setVisible(false);
+        		_status = 0;
+        		setVisible(false);
             }
 		});
         
@@ -108,7 +106,7 @@ public class ChangeCO2ClassDialog extends JDialog {
         bOk.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-            	
+            	_status = 1;
             	setVisible(false);
             }
 		});
@@ -116,7 +114,32 @@ public class ChangeCO2ClassDialog extends JDialog {
         panelB.add(bCancel);
         panelB.add(bOk);
         
-        setVisible(true);
+        this.pack();
+    	this.setLocationRelativeTo(null);
+	}
+	
+	
+	protected int open(RoadMap map) {
+		this.map = map;
+		
+		for(Vehicle v : map.getVehicles()) {
+	        vehiclesModel.addElement(v);
+	    }
+		
+		setVisible(true);
+		return _status;
+	}
+	
+	protected Vehicle getVehicle() {
+		return (Vehicle) vehicles.getSelectedItem();
+	}
+	
+	protected int getContClass() {
+		return (int) cbCO2.getSelectedItem();
+	}
+	
+	protected int getTicks() {
+		return (int) spTicks.getValue();
 	}
 	
 	

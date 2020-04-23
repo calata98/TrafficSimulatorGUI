@@ -3,33 +3,51 @@ package simulator.view;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.*;
 
 import simulator.control.Controller;
+import simulator.factories.SetContClassEventBuilder;
+import simulator.misc.Pair;
+import simulator.model.Event;
+import simulator.model.NewSetContClassEvent;
+import simulator.model.Road;
+import simulator.model.RoadMap;
+import simulator.model.SetWeatherEvent;
+import simulator.model.TrafficSimObserver;
+import simulator.model.Vehicle;
+import simulator.model.Weather;
 
-public class ControlPanel extends JPanel{
+public class ControlPanel extends JPanel implements TrafficSimObserver{
 
 	private Controller _ctrl;
-	private JButton bCargaFich,bChangeCO2,bChangeW,bPlay,bStop;
+	private JButton bCargaFich,bChangeCO2,bChangeW,bPlay,bStop,bExit;
+	private boolean _stopped;
+	private RoadMap _map;
+	private int _time;
 	
 	public ControlPanel(Controller _ctrl) {
 		this._ctrl = _ctrl;
-		this.setLayout(new FlowLayout(FlowLayout.LEFT));
-		this.setBackground(Color.white);
-		initButtons();
+		this.setLayout(new GridLayout(0,2));
+		//this.setBackground(Color.white);
+		_ctrl.addObserver(this);
+		initGUI();
 		setName("ControlPanel");
 	}
 	
-	private void initButtons() {
+	private void initGUI() {
 		
 		
-		
+		JPanel mainP = new JPanel();
+		mainP.setLayout(new FlowLayout(FlowLayout.LEFT));
+		//mainP.setBackground(Color.white);
 		//Boton Carga del fichero de eventos
 		bCargaFich = new JButton();
 		bCargaFich.setIcon(new ImageIcon("resources/icons/open.png"));
@@ -48,6 +66,8 @@ public class ControlPanel extends JPanel{
         			_ctrl.reset();
         			try {
 						_ctrl.loadEvents(new FileInputStream(fileChooser.getSelectedFile()));
+						
+						
 					} catch (FileNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -61,13 +81,13 @@ public class ControlPanel extends JPanel{
 
         });
 		
-		add(bCargaFich);
+		mainP.add(bCargaFich);
 		
 		JSeparator sep = new JSeparator(SwingConstants.VERTICAL);
 		sep.setPreferredSize(new Dimension(2,50));
 		sep.setForeground(Color.black);
 		sep.setBackground(Color.black);
-		add(sep);
+		mainP.add(sep);
 		
 		//Panel Botones de Changeco2 y ChangeWeather
 		JPanel pChange = new JPanel(); 
@@ -80,7 +100,15 @@ public class ControlPanel extends JPanel{
 		bChangeCO2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-            	ChangeCO2ClassDialog dialog = new ChangeCO2ClassDialog((JFrame) SwingUtilities.getWindowAncestor(bChangeCO2),_ctrl.getSimulator().getRoadMap().getVehicles());
+            	ChangeCO2ClassDialog dialog = new ChangeCO2ClassDialog((JFrame) SwingUtilities.getWindowAncestor(bChangeCO2));
+            	
+            	int status = dialog.open(_map);
+            	
+            	if(status == 1) {
+            		List<Pair<String, Integer>> cs = new ArrayList<>();
+            		cs.add(new Pair<String,Integer>(dialog.getVehicle().getId(),dialog.getVehicle().getContClass()));
+            		_ctrl.addEvent(new NewSetContClassEvent(_time + dialog.getTicks(),cs));
+            	}
             }
 		});
 		
@@ -93,29 +121,37 @@ public class ControlPanel extends JPanel{
 		bChangeW.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-            	ChangeWeatherDialog dialog = new ChangeWeatherDialog((JFrame) SwingUtilities.getWindowAncestor(bChangeCO2),_ctrl.getSimulator().getRoadMap().getRoads());
+            	ChangeWeatherDialog dialog = new ChangeWeatherDialog((JFrame) SwingUtilities.getWindowAncestor(bChangeCO2));
+            	
+            	
+            	int status = dialog.open(_map);
+            	
+            	if(status == 1) {
+            		List<Pair<String, Weather>> cs = new ArrayList<>();
+            		cs.add(new Pair<String,Weather>(dialog.getRoad().getId(),dialog.getRoad().getWeather()));
+            		_ctrl.addEvent(new SetWeatherEvent(_time + dialog.getTicks(),cs));
+            	}
             }
 		});
 		pChange.add(bChangeW);
-		add(pChange);
+		mainP.add(pChange);
 		
 		JSeparator sep2 = new JSeparator(SwingConstants.VERTICAL);
 		sep2.setPreferredSize(new Dimension(3,50));
 		sep2.setForeground(Color.black);
 		sep2.setBackground(Color.black);
-		add(sep2);
+		mainP.add(sep2);
 		
 		
 		//Panel de botones play/stop
 		JPanel pBPlayStop = new JPanel();
 		pBPlayStop.setLayout(new FlowLayout(FlowLayout.LEFT,0,0));
-		pBPlayStop.setBackground(Color.white);
+		//pBPlayStop.setBackground(Color.white);
 		
 		
 		//Spinner de ticks
-		JTextArea tTicks = new JTextArea("Ticks: ");
-		tTicks.setEditable(false);
-		tTicks.setBackground(Color.white);
+		JLabel tTicks = new JLabel("Ticks: ");
+		//tTicks.setBackground(Color.white);
 		
 		JSpinner spTicks = new JSpinner();
 		SpinnerModel model =   new SpinnerNumberModel(10, 1, 1000, 1);
@@ -129,7 +165,9 @@ public class ControlPanel extends JPanel{
 		bPlay.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-            	_ctrl.run((int)spTicks.getValue());
+            	_stopped = false;
+            	enableToolBar(false);
+            	run_sim((int)spTicks.getValue());
             }
 		});
 		
@@ -140,16 +178,122 @@ public class ControlPanel extends JPanel{
 		bStop.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-            	//_ctrl.run();
+            	stop();
             }
 		});
 				
 		pBPlayStop.add(bPlay);
 		pBPlayStop.add(bStop);
-		add(pBPlayStop);
+		mainP.add(pBPlayStop);
 
-		add(tTicks);
-		add(spTicks);
+		mainP.add(tTicks);
+		mainP.add(spTicks);
+		add(mainP);
+		
+		JPanel pExit = new JPanel();
+		pExit.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		//pExit.setBackground(Color.white);
+		
+		JSeparator sep3 = new JSeparator(SwingConstants.VERTICAL);
+		sep3.setPreferredSize(new Dimension (3,50));
+		sep3.setBackground(Color.black);
+		sep3.setForeground(Color.black);
+		pExit.add(sep3);
+		bExit = new JButton();
+		bExit.setIcon(new ImageIcon("resources/icons/exit.png"));
+		bExit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+            	int seleccion = JOptionPane.showOptionDialog( (JFrame) SwingUtilities.getWindowAncestor(bExit),
+            			   "Are you sure you want to quit?", 
+            			   "Quit",
+            			   JOptionPane.YES_NO_OPTION,
+            			   JOptionPane.QUESTION_MESSAGE,
+            			   null,    
+            			   new Object[] { "No", "Yes"},   
+            			   null);
+            	
+            	
+            	if(seleccion == 1) {
+            		System.exit(0);
+            	}
+            }
+		});
+		pExit.add(bExit);
+		add(pExit);
+	}
+
+	@Override
+	public void onAdvanceStart(RoadMap map, List<Event> events, int time) {
+
+		
+		
+	}
+
+	@Override
+	public void onAdvanceEnd(RoadMap map, List<Event> events, int time) {
+
+		this._time = time;
+		
+	}
+
+	@Override
+	public void onEventAdded(RoadMap map, List<Event> events, Event e, int time) {
+		
+	}
+
+	@Override
+	public void onReset(RoadMap map, List<Event> events, int time) {
+
+		
+		
+	}
+
+	@Override
+	public void onRegister(RoadMap map, List<Event> events, int time) {
+		_map = map;
+		_time = time;
+	}
+
+	@Override
+	public void onError(String err) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	private void run_sim( int n ) {
+		if ( n > 0 && ! _stopped ) {
+			try {
+			_ctrl .run(1);
+			} catch (Exception e ) {
+			// TODO show error message
+			_stopped = true ;
+			return ;
+			}
+			SwingUtilities.invokeLater( new Runnable() {
+				@Override
+				public void run() {
+				run_sim( n - 1);
+				}
+			});
+		} else {
+			enableToolBar( true );
+			_stopped = true ;
+		}
+	}
+		
+	
+	private void stop() {
+		_stopped = true ;
+		enableToolBar(true);
+	}
+	
+	private void enableToolBar(boolean enable) {
+		
+		bCargaFich.setEnabled(enable);
+		bChangeCO2.setEnabled(enable);
+		bChangeW.setEnabled(enable);
+		
 	}
 	
 	

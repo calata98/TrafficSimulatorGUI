@@ -61,7 +61,6 @@ public class RoadMap {
 		}else {
 			throw new IllegalArgumentException("No se ha podido añadir el vehiculo");
 		}
-		System.out.println("??");
 	}
 	
 	public Junction getJunction(String id) {

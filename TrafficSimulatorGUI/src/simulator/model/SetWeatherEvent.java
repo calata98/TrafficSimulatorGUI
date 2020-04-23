@@ -33,7 +33,15 @@ public class SetWeatherEvent extends Event {
 	
 	@Override
 	public String toString() {
-		return "Change Weather" ;
+		String str =  "Change Weather: [" ;
+		
+		for(int i = 0; i < ws.size(); i++) {
+			str += "(" + ws.get(i).getFirst() + "," + ws.get(i).getSecond() + ")";
+		}
+		
+		str += "]";
+		
+		return str;
 	}
 
 }

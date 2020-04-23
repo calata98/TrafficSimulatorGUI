@@ -7,10 +7,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
@@ -18,39 +20,32 @@ import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 
 import simulator.model.Road;
+import simulator.model.RoadMap;
 import simulator.model.Vehicle;
 import simulator.model.Weather;
 
 public class ChangeWeatherDialog extends JDialog {
 
 	
+	private static final String HELPMSG = "Schedule an event to change the weather of a road after a given number of simulation ticks from now.";
 	private final JPanel contentPanel = new JPanel();
-	private Road [] roads;
+	private RoadMap map;
+	private JSpinner spTicks;
+	private int _status;
+	private JComboBox<Road> roads;
+	private DefaultComboBoxModel<Road> roadsModel;
+	private JComboBox<Weather> cbWeather;
 	
-	public ChangeWeatherDialog(JFrame parent,List<Road> roads) {
+	public ChangeWeatherDialog(JFrame parent) {
 		super(parent,true);
-		setTitle("Change CO2 Class");
-		
-		if(roads.size() == 0) {
-			//Excepcion
-			this.roads = new Road [10];
-			
-		}else {
-			this.roads = new Road [roads.size() - 1];
-			
-			for(int i = 0; i < roads.size() - 1; i++) {
-				this.roads[i] = roads.get(i);
-			}
-			
-		}
-		
 
-		initDialog();
+		initGUI();
 	}
 	
-	private void initDialog() {
+	private void initGUI() {
 		
-		
+		_status = 0;
+		setTitle("Change CO2 Class");
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setResizable(false);
         setBounds(100, 100, 450, 160);
@@ -61,7 +56,7 @@ public class ChangeWeatherDialog extends JDialog {
         contentPanel.setBackground(Color.white);
         
         //Se le añade el texto
-        JTextArea texto = new JTextArea("Schedule an event to change the weather of a road after a given number of simulation ticks from now.");
+        JTextArea texto = new JTextArea(HELPMSG);
         texto.setBounds(20, 20, 440, 220);
         texto.setWrapStyleWord(true);
         texto.setLineWrap(true);
@@ -77,25 +72,26 @@ public class ChangeWeatherDialog extends JDialog {
         panelCMain.setLayout(new FlowLayout());
         panelCMain.setBackground(Color.white);
         
-        JTextArea tRoad = new JTextArea(" Road: " );
-        tRoad.setEditable(false);	
-        panelCMain.add(tRoad);        
+        JLabel tRoad = new JLabel(" Road: " );
+        panelCMain.add(tRoad);
         
-        JComboBox<Road> cbRoads = new JComboBox<Road> (roads);
-        panelCMain.add(cbRoads);
+        roadsModel = new DefaultComboBoxModel<Road>();
         
-        JTextArea tWeather = new JTextArea(" Weather: " );
-        tWeather.setEditable(false);
+        roads = new JComboBox();
+        
+        roads.setModel(roadsModel);
+        panelCMain.add(roads);
+        
+        JLabel tWeather = new JLabel(" Weather: " );
         panelCMain.add(tWeather);   
         
-        JComboBox<Weather> cbWeather = new JComboBox<Weather> (Weather.values());
+        cbWeather = new JComboBox<Weather> (Weather.values());
         panelCMain.add(cbWeather);
         
-        JTextArea tTicks = new JTextArea(" Ticks: " );
-        tTicks.setEditable(false);
+        JLabel tTicks = new JLabel(" Ticks: " );
         panelCMain.add(tTicks); 
         
-        JSpinner spTicks = new JSpinner();
+        spTicks = new JSpinner();
         SpinnerModel model =   new SpinnerNumberModel(1, 0, 20, 1);
         spTicks.setModel(model);
         panelCMain.add(spTicks); 
@@ -108,6 +104,7 @@ public class ChangeWeatherDialog extends JDialog {
         bCancel.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
+            	_status = 0;
             	setVisible(false);
             }
 		});
@@ -116,7 +113,7 @@ public class ChangeWeatherDialog extends JDialog {
         bOk.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-            	
+            	_status = 1;
             	setVisible(false);
             }
 		});
@@ -124,7 +121,31 @@ public class ChangeWeatherDialog extends JDialog {
         panelB.add(bCancel);
         panelB.add(bOk);
         
-        setVisible(true);
+        this.pack();
+    	this.setLocationRelativeTo(null);
+	}
+	
+	protected int open(RoadMap map) {
+		this.map = map;
+		
+		for(Road r : map.getRoads()) {
+	        roadsModel.addElement(r);
+	    }
+		
+		setVisible(true);
+		return _status;
+	}
+	
+	protected Road getRoad() {
+		return (Road) roads.getSelectedItem();
+	}
+	
+	protected String getWeather() {
+		return (String) cbWeather.getSelectedItem();
+	}
+	
+	protected int getTicks() {
+		return (int) spTicks.getValue();
 	}
 	
 }

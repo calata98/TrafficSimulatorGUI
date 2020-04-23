@@ -92,17 +92,12 @@ public class Controller {
 		simulator.removeObserver(o);
 	}
 	
-	private void addEvent(Event e) {
+	public void addEvent(Event e) {
 		simulator.addEvent(e);
 	}
 	
 	public void reset() {
 		simulator.reset();
-	}
-	
-	//No sé si se puede
-	public TrafficSimulator getSimulator() {
-		return simulator;
 	}
 	
 	
