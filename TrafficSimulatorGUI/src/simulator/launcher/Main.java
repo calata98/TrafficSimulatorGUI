@@ -180,14 +180,20 @@ public class Main {
 		
 		Controller ctrl = new Controller(new TrafficSimulator(),_eventsFactory);
 		
-		if(_inFile != null) {
-			ctrl.loadEvents(new FileInputStream(_inFile));
-		}
+		
 		
 		SwingUtilities.invokeLater( new Runnable() {
 			@ Override
 			public void run() {
 			new MainWindow(ctrl);
+			if(_inFile != null) {
+				try {
+					ctrl.loadEvents(new FileInputStream(_inFile));
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 			}
 		});
 		

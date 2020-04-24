@@ -162,5 +162,18 @@ public abstract class Road extends SimulatedObject{
 	public Weather getWeather() {
 		return weather;
 	}
+	
+	public int getMaxSpeed() {
+		return maxSpeed;
+	}
+	
+	public int getSpeedLimit() {
+		return currSpeedLimit;
+	}
+	
+	public List<Vehicle> getVehicles(){
+		return Collections.unmodifiableList(new ArrayList<>(vehicles));
+	}
+	
 
 }

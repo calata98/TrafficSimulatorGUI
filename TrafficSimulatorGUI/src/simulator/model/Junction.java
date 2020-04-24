@@ -145,6 +145,10 @@ public class Junction extends SimulatedObject {
 		return aux;
 	}
 	
+	public List<List<Vehicle>> getQueueList() {
+		return Collections.unmodifiableList(queueList);
+	}
+	
 	public int getX() {
 		return xCoor;
 	}

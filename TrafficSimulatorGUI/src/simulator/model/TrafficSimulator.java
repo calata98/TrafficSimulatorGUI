@@ -25,7 +25,6 @@ public class TrafficSimulator implements Observable<TrafficSimObserver>{
 	
 	public void addEvent(Event e) {
 		eventList.add(e);
-		
 		for(TrafficSimObserver obv : observers) {
 			obv.onEventAdded(roadMap,eventList,e,time);
 		}

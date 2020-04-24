@@ -14,15 +14,13 @@ import java.util.List;
 import javax.swing.*;
 
 import simulator.control.Controller;
-import simulator.factories.SetContClassEventBuilder;
+
 import simulator.misc.Pair;
 import simulator.model.Event;
 import simulator.model.NewSetContClassEvent;
-import simulator.model.Road;
 import simulator.model.RoadMap;
 import simulator.model.SetWeatherEvent;
 import simulator.model.TrafficSimObserver;
-import simulator.model.Vehicle;
 import simulator.model.Weather;
 
 public class ControlPanel extends JPanel implements TrafficSimObserver{
@@ -36,7 +34,6 @@ public class ControlPanel extends JPanel implements TrafficSimObserver{
 	public ControlPanel(Controller _ctrl) {
 		this._ctrl = _ctrl;
 		this.setLayout(new GridLayout(0,2));
-		//this.setBackground(Color.white);
 		_ctrl.addObserver(this);
 		initGUI();
 		setName("ControlPanel");
@@ -47,7 +44,7 @@ public class ControlPanel extends JPanel implements TrafficSimObserver{
 		
 		JPanel mainP = new JPanel();
 		mainP.setLayout(new FlowLayout(FlowLayout.LEFT));
-		//mainP.setBackground(Color.white);
+
 		//Boton Carga del fichero de eventos
 		bCargaFich = new JButton();
 		bCargaFich.setIcon(new ImageIcon("resources/icons/open.png"));
@@ -65,6 +62,8 @@ public class ControlPanel extends JPanel implements TrafficSimObserver{
 
         			_ctrl.reset();
         			try {
+        				
+
 						_ctrl.loadEvents(new FileInputStream(fileChooser.getSelectedFile()));
 						
 						
@@ -106,7 +105,7 @@ public class ControlPanel extends JPanel implements TrafficSimObserver{
             	
             	if(status == 1) {
             		List<Pair<String, Integer>> cs = new ArrayList<>();
-            		cs.add(new Pair<String,Integer>(dialog.getVehicle().getId(),dialog.getVehicle().getContClass()));
+            		cs.add(new Pair<String,Integer>(dialog.getVehicle().getId(),dialog.getContClass()));
             		_ctrl.addEvent(new NewSetContClassEvent(_time + dialog.getTicks(),cs));
             	}
             }
@@ -123,12 +122,11 @@ public class ControlPanel extends JPanel implements TrafficSimObserver{
             public void actionPerformed(ActionEvent ae) {
             	ChangeWeatherDialog dialog = new ChangeWeatherDialog((JFrame) SwingUtilities.getWindowAncestor(bChangeCO2));
             	
-            	
             	int status = dialog.open(_map);
             	
             	if(status == 1) {
             		List<Pair<String, Weather>> cs = new ArrayList<>();
-            		cs.add(new Pair<String,Weather>(dialog.getRoad().getId(),dialog.getRoad().getWeather()));
+            		cs.add(new Pair<String,Weather>(dialog.getRoad().getId(),dialog.getWeather()));
             		_ctrl.addEvent(new SetWeatherEvent(_time + dialog.getTicks(),cs));
             	}
             }
@@ -146,12 +144,10 @@ public class ControlPanel extends JPanel implements TrafficSimObserver{
 		//Panel de botones play/stop
 		JPanel pBPlayStop = new JPanel();
 		pBPlayStop.setLayout(new FlowLayout(FlowLayout.LEFT,0,0));
-		//pBPlayStop.setBackground(Color.white);
 		
 		
 		//Spinner de ticks
 		JLabel tTicks = new JLabel("Ticks: ");
-		//tTicks.setBackground(Color.white);
 		
 		JSpinner spTicks = new JSpinner();
 		SpinnerModel model =   new SpinnerNumberModel(10, 1, 1000, 1);
@@ -192,7 +188,6 @@ public class ControlPanel extends JPanel implements TrafficSimObserver{
 		
 		JPanel pExit = new JPanel();
 		pExit.setLayout(new FlowLayout(FlowLayout.RIGHT));
-		//pExit.setBackground(Color.white);
 		
 		JSeparator sep3 = new JSeparator(SwingConstants.VERTICAL);
 		sep3.setPreferredSize(new Dimension (3,50));
@@ -293,7 +288,7 @@ public class ControlPanel extends JPanel implements TrafficSimObserver{
 		bCargaFich.setEnabled(enable);
 		bChangeCO2.setEnabled(enable);
 		bChangeW.setEnabled(enable);
-		
+		bPlay.setEnabled(enable);
 	}
 	
 	

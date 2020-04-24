@@ -140,8 +140,8 @@ public class ChangeWeatherDialog extends JDialog {
 		return (Road) roads.getSelectedItem();
 	}
 	
-	protected String getWeather() {
-		return (String) cbWeather.getSelectedItem();
+	protected Weather getWeather() {
+		return (Weather) cbWeather.getSelectedItem();
 	}
 	
 	protected int getTicks() {

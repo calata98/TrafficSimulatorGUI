@@ -1,11 +1,13 @@
 package simulator.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 
 import simulator.control.Controller;
 
@@ -35,22 +37,42 @@ public class MainWindow extends JFrame {
 	viewsPanel .add( mapsPanel );
 	
 	// tables
-	JPanel eventsView =
-	createViewPanel( new JTable( new EventsTableModel( _ctrl )), "Events" );
+	JPanel eventsView = createViewPanel( new JTable( new EventsTableModel( _ctrl )), "Events" );
 	eventsView .setPreferredSize( new Dimension(500, 200));
+	eventsView.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black,2), "Events"));
 	tablesPanel .add( eventsView );
 	
 	
+	JPanel vehiclesView = createViewPanel( new JTable( new VehiclesTableModel( _ctrl )), "Vehicles" );
+	vehiclesView .setPreferredSize( new Dimension(500, 200));
+	vehiclesView.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black,2), "Vehicles"));
+	tablesPanel .add( vehiclesView );
+	
+	JPanel roadsView = createViewPanel( new JTable( new RoadsTableModel( _ctrl )), "Roads" );
+	roadsView .setPreferredSize( new Dimension(500, 200));
+	roadsView.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black,2), "Roads"));
+	tablesPanel .add( roadsView );
 	
 	
-	// TODO add other tables
-	// ...
+	JPanel junctionsView = createViewPanel( new JTable( new JunctionsTableModel( _ctrl )), "Junctions" );
+	junctionsView .setPreferredSize( new Dimension(500, 200));
+	junctionsView.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black,2), "Junctions"));
+	tablesPanel .add( junctionsView );
+			
+	
 	// maps
 	JPanel mapView = createViewPanel( new MapComponent( _ctrl ), "Map" );
 	mapView .setPreferredSize( new Dimension(500, 400));
+	mapView.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black,2), "Map"));
 	mapsPanel .add( mapView );
-	// TODO add a map for MapByRoadComponent
-	// ...
+	
+	JPanel mapByRoadView = createViewPanel( new MapByRoadComponent( _ctrl ), "Map by Road" );
+	mapByRoadView .setPreferredSize( new Dimension(500, 400));
+	mapByRoadView.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black,2), "Map by Road"));
+	mapsPanel .add( mapByRoadView );
+	
+	
+	
 	this .setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
 	this .pack();
 	this.setLocationRelativeTo(null);

@@ -156,5 +156,33 @@ public class Vehicle extends SimulatedObject implements Comparable<Vehicle>{
 	public int getContClass() {
 		return contClass;
 	}
+	
+	public List<Junction> getItinerary(){
+		return readItinerary;
+	}
+
+	public int getMaxSpeed() {
+		return maxSpeed;
+	}
+
+	public void setMaxSpeed(int maxSpeed) {
+		this.maxSpeed = maxSpeed;
+	}
+
+	public int getContTotal() {
+		return contTotal;
+	}
+
+	public void setContTotal(int contTotal) {
+		this.contTotal = contTotal;
+	}
+
+	public int getSpeed() {
+		return speed;
+	}
+	
+	public int getDistanciaR() {
+		return distanciaR;
+	}
 
 }
