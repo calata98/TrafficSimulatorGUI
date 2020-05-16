@@ -162,7 +162,6 @@ public class MapByRoadComponent extends JComponent implements TrafficSimObserver
 	@Override
 	public void onAdvanceStart(RoadMap map, List<Event> events, int time) {
 		update(map);
-
 	}
 
 	@Override

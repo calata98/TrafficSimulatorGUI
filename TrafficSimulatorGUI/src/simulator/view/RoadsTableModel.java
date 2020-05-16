@@ -85,7 +85,7 @@ public class RoadsTableModel extends AbstractTableModel implements TrafficSimObs
 
 	@Override
 	public void onAdvanceStart(RoadMap map, List<Event> events, int time) {
-		
+		setRoadsList(map.getRoads());
 	}
 
 	@Override

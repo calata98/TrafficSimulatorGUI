@@ -1,13 +1,14 @@
 package simulator.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.json.JSONObject;
 
 import simulator.misc.SortedArrayList;
 
-public class TrafficSimulator implements Observable<TrafficSimObserver>{
+public class TrafficSimulator implements Observable<TrafficSimObserver>, Cloneable{
 
 	private RoadMap roadMap; 
 	private List<Event> eventList;
@@ -92,6 +93,5 @@ public class TrafficSimulator implements Observable<TrafficSimObserver>{
 	public void removeObserver(TrafficSimObserver o) {
 		observers.remove(o);
 	}
-	
 	
 }

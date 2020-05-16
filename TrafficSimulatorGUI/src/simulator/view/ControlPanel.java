@@ -150,7 +150,7 @@ public class ControlPanel extends JPanel implements TrafficSimObserver{
 		JLabel tTicks = new JLabel("Ticks: ");
 		
 		JSpinner spTicks = new JSpinner();
-		SpinnerModel model =   new SpinnerNumberModel(10, 1, 1000, 1);
+		SpinnerModel model =   new SpinnerNumberModel(10, 1, 10000, 1);
 		spTicks.setModel(model);
 		spTicks.setPreferredSize(new Dimension(60,40));
 		
@@ -186,14 +186,20 @@ public class ControlPanel extends JPanel implements TrafficSimObserver{
 		mainP.add(spTicks);
 		add(mainP);
 		
+		JSeparator sep3 = new JSeparator(SwingConstants.VERTICAL);
+		sep3.setPreferredSize(new Dimension(3,50));
+		sep3.setForeground(Color.black);
+		sep3.setBackground(Color.black);
+		mainP.add(sep3);
+		
 		JPanel pExit = new JPanel();
 		pExit.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		
-		JSeparator sep3 = new JSeparator(SwingConstants.VERTICAL);
-		sep3.setPreferredSize(new Dimension (3,50));
-		sep3.setBackground(Color.black);
-		sep3.setForeground(Color.black);
-		pExit.add(sep3);
+		JSeparator sep4 = new JSeparator(SwingConstants.VERTICAL);
+		sep4.setPreferredSize(new Dimension (3,50));
+		sep4.setBackground(Color.black);
+		sep4.setForeground(Color.black);
+		pExit.add(sep4);
 		bExit = new JButton();
 		bExit.setIcon(new ImageIcon("resources/icons/exit.png"));
 		bExit.addActionListener(new ActionListener() {

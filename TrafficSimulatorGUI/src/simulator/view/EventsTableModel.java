@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import extra.jtable.EventEx;
 import simulator.control.Controller;
 import simulator.model.Event;
 import simulator.model.RoadMap;
@@ -68,8 +67,7 @@ public class EventsTableModel extends AbstractTableModel implements TrafficSimOb
 
 	@Override
 	public void onAdvanceStart(RoadMap map, List<Event> events, int time) {
-		// TODO Auto-generated method stub
-		
+		setEventsList(events);
 	}
 
 	@Override
